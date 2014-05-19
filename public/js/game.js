@@ -2,10 +2,13 @@ var game = new Phaser.Game(800, 600, 'quest-game', Phaser.AUTO, { preload: prelo
 
 var player;
 var ground;
-var fpsText
+var fpsText;
 
-var MAX_SPEED = 500; // Pixels/second
-var ACCELERATION = 1500; // Pixels/second/second
+var MAX_SPEED = 500;     // Pixels / second
+var JUMP_SPEED = -1000;  // Pixels / second (negative y is u p )
+var ACCELERATION = 1200; // Pixels / second / second
+var DRAG = 2400;         // Pixels / second / second
+var GRAVITY = 2400;      // Pixels / second
 
 var BACKGROUND_COLOR = 0x4488cc;
 
@@ -24,7 +27,10 @@ function create() {
   game.physics.enable(player, Phaser.Physics.ARCADE);
 
   player.body.collideWorldBounds = true;
-  player.body.maxVelocity.setTo(MAX_SPEED, MAX_SPEED); // x, y
+  player.body.maxVelocity.setTo(MAX_SPEED, MAX_SPEED * 10); // x, y
+  player.body.drag.setTo(DRAG, 0); // x, y
+
+  game.physics.arcade.gravity.y = GRAVITY;
 
   game.input.keyboard.addKeyCapture([
     Phaser.Keyboard.LEFT,
@@ -45,6 +51,8 @@ function create() {
     ground.add(groundBlock);
   }
 
+  game.add.image(0, 0, makeHeightMarkerBitmap());
+
   // Show FPS
   game.time.advancedTiming = true;
   fpsText = game.add.text(
@@ -59,16 +67,20 @@ function update() {
 
   game.physics.arcade.collide(player, ground);
 
-
   if (input.isLeft()) {
     player.body.acceleration.x = -ACCELERATION;
   } else if (input.isRight()) {
     player.body.acceleration.x = ACCELERATION;
   } else {
     player.body.acceleration.x = 0;
-    player.body.velocity.x = 0;
+  }
+
+  var onTheGround = player.body.touching.down;
+  if (onTheGround && input.isUp()) {
+    player.body.velocity.y = JUMP_SPEED;
   }
 }
+
 
 function ActiveInput() {
   this.isLeft = function() {
@@ -79,7 +91,7 @@ function ActiveInput() {
                  game.input.activePointer.x < game.width / 4);
 
     return isActive;
-  },
+  };
   this.isRight = function() {
     var isActive = false;
 
@@ -88,5 +100,30 @@ function ActiveInput() {
                  game.input.activePointer.x > game.width / 2 + game.width / 4);
 
     return isActive;
+  };
+  this.isUp = function (duration) {
+    var isActive = false;
+
+    isActive = game.input.keyboard.justPressed(Phaser.Keyboard.UP, duration);
+    isActive |= (game.input.activePointer.justPressed(duration + 1000/60) &&
+                 game.input.activePointer.x > game.width / 4 &&
+                 game.input.activePointer.x < game.width / 2 + game.width / 4);
+
+    return isActive;
+  };
+}
+
+
+function makeHeightMarkerBitmap() {
+  var bitmap = game.add.bitmapData(game.width, game.height);
+
+  for (y = game.height - 32; y >= 64; y -= 32) {
+    bitmap.context.beginPath();
+    bitmap.context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    bitmap.context.moveTo(0, y);
+    bitmap.context.lineTo(game.width, y);
+    bitmap.context.stroke();
   }
+
+  return bitmap;
 }
