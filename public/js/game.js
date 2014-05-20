@@ -5,7 +5,7 @@ var ground;
 var fpsText;
 
 var MAX_SPEED = 500;     // Pixels / second
-var JUMP_SPEED = -1000;  // Pixels / second (negative y is u p )
+var JUMP_SPEED = -250;  // Pixels / second (negative y is u p )
 var ACCELERATION = 1200; // Pixels / second / second
 var DRAG = 2400;         // Pixels / second / second
 var GRAVITY = 2400;      // Pixels / second
@@ -75,8 +75,7 @@ function update() {
     player.body.acceleration.x = 0;
   }
 
-  var onTheGround = player.body.touching.down;
-  if (onTheGround && input.isUp()) {
+  if (input.isUp() && player.body.touching.down) {
     player.body.velocity.y = JUMP_SPEED;
   }
 }
@@ -113,17 +112,59 @@ function ActiveInput() {
   };
 }
 
+function questBits() {
+  Quest.prototype.render = function() {
+    game.add.text(game.world.centerX - 300, game.world.centerY, this.title, this.titleStyle);
+    game.add.text(game.world.centerX - 300, game.world.centerY + 32, this.text, this.bodyStyle);
+  };
 
-function makeHeightMarkerBitmap() {
-  var bitmap = game.add.bitmapData(game.width, game.height);
+  var quest = new Quest('An Quest for You', 'Hey Adventurer, enjoy this quest we made for you!');
 
-  for (y = game.height - 32; y >= 64; y -= 32) {
-    bitmap.context.beginPath();
-    bitmap.context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-    bitmap.context.moveTo(0, y);
-    bitmap.context.lineTo(game.width, y);
-    bitmap.context.stroke();
-  }
+  quest.titleStyle = { font: '24px Arial', fill: '#ffffff', align: 'center' };
+  quest.bodyStyle = { font: '16px Arial', fill: '#ffffff', align: 'center' };
 
-  return bitmap;
+  quest.render();
+}
+
+var TitleState = function() {
+};
+
+TitleState.prototype.text = {
+  title: 'QUEST QUEST',
+  subTitle: 'quest quest quest quest quest quest quest quest'
+};
+
+var Journal = [
+  { level: 0, quest: new Quest('Filler Quest', 'This is the blank filler quest!') },
+  { level: 1, quest: new Quest('Safety First', 'The ground is fast approaching, you must land safely!') },
+  { level: 2, quest: new Quest('Left Alone', 'Explore your new surroundings, press !') },
+  { level: 3, quest: new Quest('Right of Way', 'Get a feel for your surroundings, press d or right arrow to move right!') },
+  { level: 4, quest: new Quest('Basically Michael Jordan', 'Press w or up arrow to jump.') },
+  { level: 5, quest: new Quest('Launch Over It!', 'Quick, vault over that fence to see what is going on over there!') },
+  { level: 6, quest: new Quest('A Path in Life', 'Wow, you are now so experienced that you can decide on an adventeturer class!') },
+  { level: 7, quest: new Quest('The Tools at Hand', 'There is a thing over there! Press down to use something in the world.') },
+  { level: 8, quest: new Quest('Using the Thing', 'Use the thing on those other things over there.') },
+];
+
+function Player() {
+  this.sprite = sprite;
+
+  this.levelUp = function() {
+    completed.push(this.questLog.current);
+    this.questLog.current = unstarted.shift();
+  };
+
+  this.questLog = {
+    current: new Quest('Land safely', 'holy shit the ground is coming so fast, land safely!'),
+    unstarted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    completed: [],
+  };
+
+  this.level = completedQuests.length;
+}
+
+
+function Quest(title, body) {
+  this.title = title;
+  this.body = body;
 }
