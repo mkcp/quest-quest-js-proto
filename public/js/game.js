@@ -1,11 +1,13 @@
-var game = new Phaser.Game(800, 600, 'quest-game', Phaser.AUTO, { preload: preload, create: create, update: update });
+var GAME_HEIGHT = 800;
+var GAME_WIDTH = 600;
+var game = new Phaser.Game(GAME_HEIGHT, GAME_WIDTH, 'quest-game', Phaser.AUTO, { preload: preload, create: create, update: update });
 
 var player;
 var ground;
 var fpsText;
 
 var MAX_SPEED = 500;     // Pixels / second
-var JUMP_SPEED = -250;  // Pixels / second (negative y is u p )
+var JUMP_SPEED = -250;   // Pixels / second (negative y is u p )
 var ACCELERATION = 1200; // Pixels / second / second
 var DRAG = 2400;         // Pixels / second / second
 var GRAVITY = 2400;      // Pixels / second
@@ -50,8 +52,6 @@ function create() {
     groundBlock.body.allowGravity = false;
     ground.add(groundBlock);
   }
-
-  game.add.image(0, 0, makeHeightMarkerBitmap());
 
   // Show FPS
   game.time.advancedTiming = true;
@@ -144,6 +144,7 @@ var Journal = [
   { level: 6, quest: new Quest('A Path in Life', 'Wow, you are now so experienced that you can decide on an adventeturer class!') },
   { level: 7, quest: new Quest('The Tools at Hand', 'There is a thing over there! Press down to use something in the world.') },
   { level: 8, quest: new Quest('Using the Thing', 'Use the thing on those other things over there.') },
+  { level: 9, quest: new Quest('Vanquish Your Foe', 'Strike at the heart of the monster in front of you.') },
 ];
 
 function Player() {

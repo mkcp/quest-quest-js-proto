@@ -1,5 +1,5 @@
 {
   links: {
-    boilerplate: "https://github.com/luizbills/phaser-js-boilerplate/",
-  },
+    "boilerplate": "https://github.com/luizbills/phaser-js-boilerplate/"
+  }
 }

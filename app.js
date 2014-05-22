@@ -15,7 +15,3 @@ app.get('/', express.static('public/index.html'));
 app.listen(app.get('port'), function() {
   console.log('QUEST QUEST is now available on port ' + app.get('port'));
 });
-
-// app.use(express.json());
-// app.use(express.urlencoded());
-// app.use(express.methodOverride());
